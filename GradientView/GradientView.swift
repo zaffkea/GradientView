@@ -9,13 +9,12 @@
 import UIKit
 
 /// Simple view for drawing gradients and borders.
-@IBDesignable
-open class GradientView: UIView {
+@IBDesignable open class GradientView: UIView {
 
 	// MARK: - Types
 
 	/// The mode of the gradient.
-	public enum `Type` {
+	public enum Mode {
 		/// A linear gradient.
 		case linear
 
@@ -73,56 +72,49 @@ open class GradientView: UIView {
 	}
 
 	/// The mode of the gradient. The default is `.Linear`.
-	@IBInspectable
-	open var mode: Type = .linear {
+	@IBInspectable open var mode: Mode = .linear {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
 
 	/// The direction of the gradient. Only valid for the `Mode.Linear` mode. The default is `.Vertical`.
-	@IBInspectable
-	open var direction: Direction = .vertical {
+	@IBInspectable open var direction: Direction = .vertical {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
 
 	/// 1px borders will be drawn instead of 1pt borders. The default is `true`.
-	@IBInspectable
-	open var drawsThinBorders: Bool = true {
+	@IBInspectable open var drawsThinBorders: Bool = true {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
 
 	/// The top border color. The default is `nil`.
-	@IBInspectable
-	open var topBorderColor: UIColor? {
+	@IBInspectable open var topBorderColor: UIColor? {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
 
 	/// The right border color. The default is `nil`.
-	@IBInspectable
-	open var rightBorderColor: UIColor? {
+	@IBInspectable open var rightBorderColor: UIColor? {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
 
 	///  The bottom border color. The default is `nil`.
-	@IBInspectable
-	open var bottomBorderColor: UIColor? {
+	@IBInspectable open var bottomBorderColor: UIColor? {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
 
 	/// The left border color. The default is `nil`.
-	@IBInspectable
-	open var leftBorderColor: UIColor? {
+	@IBInspectable open var leftBorderColor: UIColor? {
 		didSet {
 			setNeedsDisplay()
 		}
@@ -209,10 +201,10 @@ open class GradientView: UIView {
 
 			let gradientColors = colors.map { (color: UIColor) -> AnyObject! in
 				let cgColor = color.cgColor
-				let cgColorSpace = cgColor.colorSpace
+				let cgColorSpace = cgColor.colorSpace ?? colorSpace
 
 				// The color's color space is RGB, simply add it.
-				if cgColorSpace?.model.rawValue == colorSpaceModel.rawValue {
+				if cgColorSpace.model == colorSpaceModel {
 					return cgColor as AnyObject!
 				}
 
@@ -223,14 +215,9 @@ open class GradientView: UIView {
 				var alpha: CGFloat = 0
 				color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
 				return UIColor(red: red, green: green, blue: blue, alpha: alpha).cgColor as AnyObject!
-			}
+			} as NSArray
 
-			// TODO: This is ugly. Surely there is a way to make this more concise.
-			if let locations = locations {
-				gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors as CFArray, locations: locations)
-			} else {
-				gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors as CFArray, locations: nil)
-			}
+			gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors, locations: locations)
 		}
 	}
 

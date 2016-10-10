@@ -13,16 +13,23 @@ final class ViewController: UIViewController {
 
 	// MARK: - Properties
 	
-	@IBOutlet var gradientView: GradientView!
+	let gradientView = GradientView()
 
 
 	// MARK: - UIViewController
+
+	override func loadView() {
+		view = gradientView
+	}
                             
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
+
+		title = "Gradient View"
+		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Dim", style: .plain, target: self, action: #selector(showAlert))
+
 		gradientView.colors = [
-			UIColor.white,
+			.white,
 			UIColor(red: 0, green: 0, blue: 0.5, alpha: 1)
 		]
 		
@@ -33,8 +40,8 @@ final class ViewController: UIViewController {
 
 	// MARK: - Actions
 	
-	@IBAction func showAlert(_ sender: UIButton) {
-		let alert = UIAlertController(title: "Dimming", message: "As part of iOS 7 design language, views should become desaturated when an alert view appears.", preferredStyle: .alert)
+	@objc private func showAlert() {
+		let alert = UIAlertController(title: "Dimming", message: "As part of iOS design language, views should become desaturated when an alert view appears.", preferredStyle: .alert)
 		alert.addAction(UIAlertAction(title: "Awesome", style: .default, handler: nil))
 		present(alert, animated: true, completion: nil)
 	}
